@@ -1,6 +1,8 @@
-(ns details.core)
+(ns details.core
+  (:require [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]))
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(defn generate [spec]
+  (-> spec s/gen gen/generate))
+
+(defmulti render (fn [spec data] spec))
