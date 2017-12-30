@@ -1,10 +1,10 @@
 (ns details.data.person
-  (:require [details.util :as util :refer [->gen]]
+  (:require [details.data :as data :refer [->gen]]
             [clojure.spec.alpha :as s]
             [clojure.string :as string]
             [clojure.test.check.generators :as gen]))
 
-(def data (util/read-data-resource "details/data/person.edn"))
+(def data (data/read-data-resource "details/data/person.edn"))
 
 (def letters (->> (range 65 91)
                   (map char)

@@ -1,4 +1,4 @@
-(ns details.util
+(ns details.data
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.spec.alpha :as s]
@@ -18,3 +18,6 @@
 
 (defn ->string-gen [char-gen min max]
   (gen/fmap string/join (gen/vector char-gen min max)))
+
+(defmulti render (fn [spec & args] spec))
+(defmethod render :default [_ data] data)

@@ -1,11 +1,11 @@
 (ns details.data.company
   (:require [details.data.person :as person]
-            [details.util :as util :refer [->gen]]
+            [details.data :as data :refer [->gen]]
             [clojure.spec.alpha :as s]
             [clojure.string :as string]
             [clojure.test.check.generators :as gen]))
 
-(def data (util/read-data-resource "details/data/company.edn"))
+(def data (data/read-data-resource "details/data/company.edn"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; generators                                                               ;;

@@ -1,11 +1,11 @@
 (ns details.data.internet
   (:require [details.data.company :as company]
-            [details.util :as util :refer [->gen]]
+            [details.data :as data :refer [->gen]]
             [clojure.spec.alpha :as s]
             [clojure.string :as string]
             [clojure.test.check.generators :as gen]))
 
-(def data (util/read-data-resource "details/data/internet.edn"))
+(def data (data/read-data-resource "details/data/internet.edn"))
 
 (def username-regex #"^[a-zA-Z0-9._%+-]+$")
 
@@ -19,11 +19,11 @@
 ;; characters as well as "-", "_", "+", is non-empty, and is between 3 and 16
 ;; characters.
 (defn ->username-gen []
-  (gen/let [head (util/->lowercase-alnum-char-gen)
+  (gen/let [head (data/->lowercase-alnum-char-gen)
             mid (-> data
-                    (util/->gen ::username-char)
-                    (util/->string-gen 1 14))
-            tail (util/->lowercase-alnum-char-gen)]
+                    (data/->gen ::username-char)
+                    (data/->string-gen 1 14))
+            tail (data/->lowercase-alnum-char-gen)]
     (str head mid tail)))
 
 (defn ->domain-suffix-gen []
