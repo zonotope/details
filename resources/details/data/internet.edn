@@ -1,4 +1,4 @@
-#:details.data.internet{:username-char #{\a \b \c \d \e \f \g \h \i \j \k \l \m \n \o \p \q \r \s \t \u \v \w \x \y \z \0 \1 \2 \3 \4 \5 \6 \7 \8 \9 \- \_ \+ }
+#:details.data.internet{:username-char #{\a \b \c \d \e \f \g \h \i \j \k \l \m \n \o \p \q \r \s \t \u \v \w \x \y \z \0 \1 \2 \3 \4 \5 \6 \7 \8 \9 \- \_ \+ \.}
                         :free-email #{"gmail.com" "yahoo.com" "hotmail.com"}
                         :domain-suffix #{"com" "biz" "info" "name" "net" "org" "gov" "io" "ly" "co" "co.uk" "com.fr" "fr" "edu" "au" }
                         :user-agent {:aol "Mozilla/5.0 (compatible; MSIE 9.0; AOL 9.7; AOLBuild 4343.19; Windows NT 6.1; WOW64; Trident/5.0; FunWebProducts)"
