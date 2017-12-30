@@ -1,5 +1,5 @@
 (ns details.data.company
-  (:require [details.data.name :as name]
+  (:require [details.data.person :as person]
             [details.util :as util :refer [->gen]]
             [clojure.spec.alpha :as s]
             [clojure.string :as string]
@@ -24,14 +24,14 @@
   (->gen data ::type))
 
 (defn ->name-a-gen []
-  (gen/let [family-name (name/->last-name-gen)
+  (gen/let [family-name (person/->last-name-gen)
             suffix (->suffix-gen)]
     (str family-name " " suffix)))
 
 (defn ->name-b-gen []
-  (gen/let [partner-a (name/->last-name-gen)
-            partner-b (name/->last-name-gen)
-            partner-c (name/->last-name-gen)]
+  (gen/let [partner-a (person/->last-name-gen)
+            partner-b (person/->last-name-gen)
+            partner-c (person/->last-name-gen)]
     (str partner-a ", " partner-b ", and " partner-c)))
 
 (defn ->name-gen []
