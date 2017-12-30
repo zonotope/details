@@ -1,6 +1,10 @@
-#:details.data.internet{:username-char #{\a \b \c \d \e \f \g \h \i \j \k \l \m \n \o \p \q \r \s \t \u \v \w \x \y \z \0 \1 \2 \3 \4 \5 \6 \7 \8 \9 \- \_ \+ \.}
+#:details.data.internet{:abbreviation #{"TCP" "HTTP" "SDD" "RAM" "GB" "CSS" "SSL" "AGP" "SQL" "FTP" "PCI" "AI" "ADP" "RSS" "XML" "EXE" "COM" "HDD" "THX" "SMTP" "SMS" "USB" "PNG" "SAS" "IB" "SCSI" "JSON" "XSS" "JBOD"}
                         :free-email #{"gmail.com" "yahoo.com" "hotmail.com"}
-                        :domain-suffix #{"com" "biz" "info" "name" "net" "org" "gov" "io" "ly" "co" "co.uk" "com.fr" "fr" "edu" "au" }
+                        :domain-suffix #{"com" "biz" "info" "name" "net" "org" "gov" "io" "ly" "co" "co.uk" "com.fr" "fr" "edu" "au" "mil.gov"}
+                        :hacker {:adjective #{"auxiliary" "primary" "back-end" "digital" "open-source" "virtual" "cross-platform" "redundant" "online" "haptic" "multi-byte" "bluetooth" "wireless" "1080p" "neural" "optical" "solid state" "mobile"}
+                                 :noun #{"driver" "protocol" "bandwidth" "panel" "microchip" "program" "port" "card" "array" "interface" "system" "sensor" "firewall" "hard drive" "pixel" "alarm" "feed" "monitor" "application" "transmitter" "bus" "circuit" "capacitor" "matrix"}
+                                 :verb #{"back up" "bypass" "hack" "override" "compress" "copy" "navigate" "index" "connect" "generate" "quantify" "calculate" "synthesize" "input" "transmit" "program" "reboot" "parse"}
+                                 :ingverb #{"backing up" "bypassing" "hacking" "overriding" "compressing" "copying" "navigating" "indexing" "connecting" "generating" "quantifying" "calculating" "synthesizing" "transmitting" "programming" "parsing"}}
                         :user-agent {:aol "Mozilla/5.0 (compatible; MSIE 9.0; AOL 9.7; AOLBuild 4343.19; Windows NT 6.1; WOW64; Trident/5.0; FunWebProducts)"
                                      :chrome "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
                                      :firefox "Mozilla/5.0 (Windows NT x.y; Win64; x64; rv:10.0) Gecko/20100101 Firefox/10.0"

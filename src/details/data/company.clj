@@ -30,9 +30,8 @@
 
 (defn ->name-b-gen []
   (gen/let [partner-a (person/->last-name-gen)
-            partner-b (person/->last-name-gen)
-            partner-c (person/->last-name-gen)]
-    (str partner-a ", " partner-b ", and " partner-c)))
+            partner-b (person/->last-name-gen)]
+    (str partner-a " and " partner-b)))
 
 (defn ->name-gen []
   (gen/one-of [(->name-a-gen) (->name-b-gen)]))

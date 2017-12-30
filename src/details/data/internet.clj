@@ -1,5 +1,6 @@
 (ns details.data.internet
   (:require [details.data.company :as company]
+            [details.data.person :as person]
             [details.data :as data :refer [->gen]]
             [clojure.spec.alpha :as s]
             [clojure.string :as string]
@@ -7,24 +8,41 @@
 
 (def data (data/read-data-resource "details/data/internet.edn"))
 
-(def username-regex #"^[\W\-\.]+$")
+(def username-regex #"^[\w\-\.]+$")
 (def domain-suffix-regex #"(^[a-z0-9]+$)|(^[a-z0-9]+(.[a-z0-9]+){1,2}$)")
-(def subdomain-regex #"^[a-z0-9\-]$")
+(def subdomain-regex #"^[a-z0-9\-]+$")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; generators                                                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; starts and ends with a lower-case letter, only contains alphanumeric
-;; characters as well as "-", "_", "+", is non-empty, and is between 3 and 16
-;; characters.
+(defn ->hacker-data-gen [hacker-key]
+  (-> (get-in data [::hacker hacker-key])
+      gen/elements))
+
+(def username-a-gen
+  (gen/let [adj (->hacker-data-gen :adjective)
+            noun (->hacker-data-gen :noun)
+            n gen/nat]
+    (-> (str adj "-" noun n)
+        (string/replace #" " "-"))))
+
+(def username-b-gen
+  (gen/let [ingverb (->hacker-data-gen :ingverb)
+            abbrev (->gen data ::abbreviation)]
+    (-> (str ingverb "-" abbrev)
+        (string/replace #" " "")
+        (string/lower-case))))
+
+(def username-c-gen
+  (gen/fmap #(-> %
+                 string/lower-case
+                 (string/replace #"\." "")
+                 (string/replace #" " "."))
+            (->gen person/data ::person/funny-name)))
+
 (defn ->username-gen []
-  (gen/let [head (data/->lowercase-alnum-char-gen)
-            mid (-> data
-                    (data/->gen ::username-char)
-                    (data/->string-gen 1 14))
-            tail (data/->lowercase-alnum-char-gen)]
-    (str head mid tail)))
+  (gen/one-of [username-a-gen username-b-gen username-c-gen]))
 
 (defn ->domain-suffix-gen []
   (->gen data ::domain-suffix))
@@ -52,7 +70,7 @@
                        (s/with-gen ->subdomain-gen)))
 
 (s/def ::subdomains (s/and (s/coll-of ::subdomain)
-                           seq))
+                           #(< 0 (count %) 2)))
 
 (s/def ::domain (s/keys :req [::subdomains ::domain-suffix]))
 
