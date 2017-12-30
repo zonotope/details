@@ -55,12 +55,9 @@
                                      (partial re-matches username-regex))
                     ->username-gen))
 
-(s/def ::subdomain (s/with-gen string?
-                     ->subdomain-gen))
+(s/def ::subdomain (s/with-gen string? ->subdomain-gen))
 
-(s/def ::domain (s/with-gen string?
-                  ->domain-gen))
+(s/def ::domain (s/with-gen string? ->domain-gen))
 
-(s/def ::email (s/with-gen (s/and string?
-                                  (partial re-matches email-regex))
+(s/def ::email (s/with-gen (s/and string? (partial re-matches email-regex))
                  ->email-gen))

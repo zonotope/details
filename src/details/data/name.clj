@@ -1,6 +1,8 @@
 (ns details.data.name
   (:require [details.util :as util :refer [->gen]]
-            [clojure.spec.alpha :as s]))
+            [clojure.spec.alpha :as s]
+            [clojure.string :as string]
+            [clojure.test.check.generators :as gen]))
 
 (def data (util/read-data-resource "details/data/name.edn"))
 
@@ -19,10 +21,55 @@
   (->gen data ::given))
 
 (defn ->last-name-gen []
-  (->gen data ::last))
+  (gen/one-of [(->gen data ::last)
+               (gen/let [maiden (->gen data ::last)
+                         married (->gen data ::last)]
+                 (string/join "-" [maiden married]))]))
 
 (defn ->suffix-gen []
   (->gen data ::suffix))
+
+(defn ->initial-gen []
+  (gen/elements letters))
+
+(defn ->first-last-gen []
+  (gen/let [first-name (->given-name-gen)
+            last-name (->given-name-gen)]
+    (str first-name " " last-name)))
+
+(defn ->name-with-middle-gen []
+  (gen/let [first-name (->given-name-gen)
+            middle-name (->given-name-gen)
+            last-name (->last-name-gen)]
+    (string/join " " [first-name middle-name last-name])))
+
+(defn ->name-with-initial-gen []
+  (gen/let [first-name (->given-name-gen)
+            initial (->initial-gen)
+            last-name (->last-name-gen)]
+    (string/join " " [first-name (str initial ".") last-name])))
+
+(defn ->name-with-prefix-gen []
+  (gen/let [n (gen/one-of [(->first-last-gen)
+                           (->name-with-middle-gen)
+                           (->name-with-initial-gen)])
+            prefix (->prefix-gen)]
+    (str prefix " " n)))
+
+(defn ->name-with-suffix-gen []
+  (gen/let [n (gen/one-of [(->first-last-gen)
+                           (->name-with-middle-gen)
+                           (->name-with-initial-gen)
+                           (->name-with-prefix-gen)])
+            suffix (->suffix-gen)]
+    (str n " " suffix)))
+
+(defn ->full-name-gen []
+  (gen/one-of [(->first-last-gen)
+               (->name-with-middle-gen)
+               (->name-with-initial-gen)
+               (->name-with-prefix-gen)
+               (->name-with-suffix-gen)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; specs                                                                    ;;
@@ -40,6 +87,4 @@
 
 (s/def ::suffix (s/with-gen string? ->suffix-gen))
 
-
-(s/def ::full (s/keys :req [::first ::last]
-                      :opt [::prefix ::suffix ::middle]))
+(s/def ::full (s/with-gen string? ->full-name-gen))
