@@ -79,9 +79,9 @@
 
 (s/def ::given-name (s/with-gen string? ->given-name-gen))
 
-(s/def ::first ::given-name)
+(s/def ::first-name ::given-name)
 
-(s/def ::middle ::given-name)
+(s/def ::middle-name ::given-name)
 
 (s/def ::initial letters)
 
