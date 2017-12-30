@@ -8,26 +8,37 @@
                   (map char)
                   set))
 
-(s/def ::prefix
-  (-> string?
-      (s/with-gen #(->gen data ::prefix))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; generators                                                               ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(s/def ::given
-  (-> string?
-      (s/with-gen #(->gen data ::given))))
+(defn ->prefix-gen []
+  (->gen data ::prefix))
 
+(defn ->given-name-gen []
+  (->gen data ::given))
+
+(defn ->last-name-gen []
+  (->gen data ::last))
+
+(defn ->suffix-gen []
+  (->gen data ::suffix))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; specs                                                                    ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(s/def ::prefix (s/with-gen string? ->prefix-gen))
+
+(s/def ::given (s/with-gen string? ->given-name-gen))
 (s/def ::first ::given)
 (s/def ::middle ::given)
 
 (s/def ::initial letters)
 
-(s/def ::last
-  (-> string?
-      (s/with-gen #(->gen data ::last))))
+(s/def ::last (s/with-gen string? ->last-name-gen))
 
-(s/def ::suffix
-  (-> string?
-      (s/with-gen #(->gen data ::suffix))))
+(s/def ::suffix (s/with-gen string? ->suffix-gen))
 
 
 (s/def ::full (s/keys :req [::first ::last]

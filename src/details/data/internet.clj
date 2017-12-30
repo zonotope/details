@@ -10,14 +10,15 @@
 
 ;; starts with a lower-case letter, only contains alpanumeric characters as well
 ;; as "-", "_", "+", is non-empty, and is between 3 and 16 characters.
-(def username-gen
-  (gen/let [head util/gen-lowercase-letter
-            tail (-> data
+(defn ->username-gen []
+  (gen/let [head (util/->lowercase-alnum-char-gen)
+            mid (-> data
                      (util/->gen ::username-char)
-                     (util/->string-gen 2 15))]
-    (str head tail)))
+                     (util/->string-gen 2 15))
+            tail (util/->lowercase-alnum-char-gen)]
+    (str head mid tail)))
 
 (s/def ::username (s/with-gen (s/and string?
                                      #(< 0 (count %) 16)
                                      (partial re-matches username-regex))
-                    (fn [] username-gen)))
+                    ->username-gen))

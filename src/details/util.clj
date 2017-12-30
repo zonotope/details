@@ -13,8 +13,8 @@
       (get k)
       gen/elements))
 
-(def gen-lowercase-letter
-  (gen/fmap string/lower-case gen/char-alpha))
+(defn ->lowercase-alnum-char-gen []
+  (gen/fmap string/lower-case gen/char-alphanumeric))
 
 (defn ->string-gen [char-gen min max]
   (gen/fmap string/join (gen/vector char-gen min max)))
