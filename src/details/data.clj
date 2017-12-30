@@ -5,6 +5,9 @@
             [clojure.string :as string]
             [clojure.test.check.generators :as gen]))
 
+(defmulti render (fn [spec & args] spec))
+(defmethod render :default [_ data] data)
+
 (defn read-data-resource [path]
   (-> path io/resource slurp edn/read-string))
 
@@ -18,6 +21,3 @@
 
 (defn ->string-gen [char-gen min max]
   (gen/fmap string/join (gen/vector char-gen min max)))
-
-(defmulti render (fn [spec & args] spec))
-(defmethod render :default [_ data] data)

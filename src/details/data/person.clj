@@ -29,48 +29,6 @@
 (defn ->name-suffix-gen []
   (->gen data ::name-suffix))
 
-(defn ->initial-gen []
-  (gen/elements letters))
-
-(defn ->first-last-gen []
-  (gen/let [first-name (->given-name-gen)
-            last-name (->last-name-gen)]
-    (str first-name " " last-name)))
-
-(defn ->name-with-middle-gen []
-  (gen/let [first-name (->given-name-gen)
-            middle-name (->given-name-gen)
-            last-name (->last-name-gen)]
-    (string/join " " [first-name middle-name last-name])))
-
-(defn ->name-with-initial-gen []
-  (gen/let [first-name (->given-name-gen)
-            initial (->initial-gen)
-            last-name (->last-name-gen)]
-    (string/join " " [first-name (str initial ".") last-name])))
-
-(defn ->name-with-prefix-gen []
-  (gen/let [n (gen/one-of [(->first-last-gen)
-                           (->name-with-middle-gen)
-                           (->name-with-initial-gen)])
-            prefix (->name-prefix-gen)]
-    (str prefix " " n)))
-
-(defn ->name-with-suffix-gen []
-  (gen/let [n (gen/one-of [(->first-last-gen)
-                           (->name-with-middle-gen)
-                           (->name-with-initial-gen)
-                           (->name-with-prefix-gen)])
-            suffix (->name-suffix-gen)]
-    (str n " " suffix)))
-
-(defn ->full-name-gen []
-  (gen/one-of [(->first-last-gen)
-               (->name-with-middle-gen)
-               (->name-with-initial-gen)
-               (->name-with-prefix-gen)
-               (->name-with-suffix-gen)]))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; specs                                                                    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -89,4 +47,11 @@
 
 (s/def ::name-suffix (s/with-gen string? ->name-suffix-gen))
 
-(s/def ::full-name (s/with-gen string? ->full-name-gen))
+(s/def ::full-name (s/keys :req [::first ::last]
+                           :opt [::prefix ::suffix ::middle ::initial]))
+
+(defmethod data/render ::full-name [_ {::keys [first last prefix suffix middle
+                                               initial]}]
+  (->> [prefix first (or middle initial) last suffix]
+       (remove nil?)
+       (string/join " ")))

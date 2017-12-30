@@ -7,9 +7,9 @@
 
 (def data (data/read-data-resource "details/data/internet.edn"))
 
-(def username-regex #"^[a-zA-Z0-9._%+-]+$")
-
-(def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
+(def username-regex #"^[\W\-\.]+$")
+(def domain-suffix-regex #"(^[a-z0-9]+$)|(^[a-z0-9]+(.[a-z0-9]+){1,2}$)")
+(def subdomain-regex #"^[a-z0-9\-]$")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; generators                                                               ;;
@@ -29,35 +29,46 @@
 (defn ->domain-suffix-gen []
   (->gen data ::domain-suffix))
 
+(defn name->subdomain [n]
+  (-> n
+      (string/replace #" " "-")
+      (string/replace #"\W" "")
+      string/lower-case))
+
 (defn ->subdomain-gen []
-  (gen/fmap #(-> %
-                 (string/replace #" " "")
-                 (string/replace #"\W" "-")
-                 string/lower-case)
-            (company/->name-gen)))
-
-(defn ->domain-gen []
-  (gen/let [subdomain (->subdomain-gen)
-            tld (->domain-suffix-gen)]
-    (str subdomain "." tld)))
-
-(defn ->email-gen []
-  (gen/let [username (->username-gen)
-            domain (->domain-gen)]
-    (str username "@" domain)))
+  (gen/fmap name->subdomain (company/->name-gen)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; specs                                                                    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(s/def ::username (s/with-gen (s/and string?
-                                     #(< 0 (count %) 16)
-                                     (partial re-matches username-regex))
-                    ->username-gen))
+(s/def ::username (-> (s/and string?
+                             #(< 0 (count %) 16)
+                             (partial re-matches username-regex))
+                      (s/with-gen ->username-gen)))
 
-(s/def ::subdomain (s/with-gen string? ->subdomain-gen))
+(s/def ::subdomain (-> (s/and string?
+                              (partial re-matches subdomain-regex))
+                       (s/with-gen ->subdomain-gen)))
 
-(s/def ::domain (s/with-gen string? ->domain-gen))
+(s/def ::subdomains (s/and (s/coll-of ::subdomain)
+                           seq))
 
-(s/def ::email (s/with-gen (s/and string? (partial re-matches email-regex))
-                 ->email-gen))
+(s/def ::domain (s/keys :req [::subdomains ::domain-suffix]))
+
+(s/def ::domain-suffix (-> (s/and string?
+                                  (partial re-matches domain-suffix-regex))
+                           (s/with-gen ->domain-suffix-gen)))
+
+(s/def ::email (s/keys :req [::username ::domain]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; render                                                                   ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod data/render ::domain [_ {::keys [subdomains domain-suffix]}]
+  (->> (concat subdomains [domain-suffix])
+       (string/join ".")))
+
+(defmethod data/render ::email [_ {::keys [username domain]}]
+  (str username "@" (data/render ::domain domain)))
